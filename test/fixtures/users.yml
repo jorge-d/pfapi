@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  name: MyString
+  email: MyString
+  password: MyString
+  salt: 1
+  score: 
+  unlocked_zone: 
+
+two:
+  name: MyString
+  email: MyString
+  password: MyString
+  salt: 1
+  score: 
+  unlocked_zone: 
