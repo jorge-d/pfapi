@@ -1,0 +1,23 @@
+<h1>Scores#index</h1>
+
+<table>
+  <tr>
+    <td>user :</td>
+    <td>score :</td>
+    <td></td>
+  </tr>
+<% @scores.each do |s|%>
+  <tr>
+    <% if s.user %>
+    <td><%= link_to s.user.name, s %></td>
+    <% else %>
+    <td>EMPTY NAME</td>
+    <% end %>
+    <td><%= s.value %></td>
+    <td><%= link_to 'Delete', s, method: :delete, confirm: "Are you sure?",  %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+<%= link_to 'Create score', new_score_path %>

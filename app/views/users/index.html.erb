@@ -8,9 +8,11 @@
   </tr>
   <% @users.each do |user| %>
   <tr>
-    <td><%= user.name %></td>
+    <td><%= link_to user.name, user %></td>
     <td><%= user.email %></td>
     <td><%= user.password %></td>
+    <td><%= link_to 'edit', edit_user_path(user) %></td>
+    <td><%= link_to 'delete', user, confirm: 'are you sure?', method: :delete %></td>
   </tr>
   <% end %>
 </table>

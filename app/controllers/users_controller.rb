@@ -1,13 +1,20 @@
 class UsersController < ApplicationController
-  before_filter :getUser, only: [:edit, :show, :update]
+  before_filter :getUser, only: [:edit, :show, :update, :destroy]
 
   def getUser
-    @user = User.find(params[:id])
+    @user = User.find_by_id(params[:id])
     if (!@user)
-      redirect_to :index, notice: "User not found"
+      redirect_to User, notice: "User not found"
       false
     end
     true
+  end
+
+  def destroy
+    if (!@user.destroy)
+      redirect_to @user, notice: "Could not delete user"
+    end
+    redirect_to User, notice: "User deleted"
   end
 
   def create

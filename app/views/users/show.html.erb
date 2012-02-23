@@ -1,5 +1,7 @@
-<% if flash[:notice] %>
-<p class="notice"><%= flash[:notice] %></p>
+<% if notice %>
+<p class="notice"><%= notice %></p>
 <% end %>
 
 <h3><%= @user.name %></h3>
+
+<%= link_to 'go back', users_path %>

@@ -1,4 +1,6 @@
 Pfapi::Application.routes.draw do
+
+  resources :scores
   resources :users
 
   # The priority is based upon order of creation:
@@ -50,11 +52,19 @@ Pfapi::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  root :to => 'user#index'
+  root :to => 'users#index'
 
   # See how all your routes lay out with "rake routes"
 
   # This is a legacy wild controller route that's not recommended for RESTful applications.
   # Note: This route will make all actions in every controller accessible via GET requests.
   # match ':controller(/:action(/:id))(.:format)'
+
+
+  ## sould handle routing errors
+  match "*a", :to => "application#routing_error"
+
+  def routing_error
+    render "404", :status => 404
+  end
 end
