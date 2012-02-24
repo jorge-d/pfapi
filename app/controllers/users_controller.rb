@@ -46,5 +46,6 @@ class UsersController < ApplicationController
 
   def index
     @users = User.all
+    @zones = Zone.all
   end
 end

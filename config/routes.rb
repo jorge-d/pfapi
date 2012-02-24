@@ -62,9 +62,7 @@ Pfapi::Application.routes.draw do
 
 
   ## sould handle routing errors
-  match "*a", :to => "application#routing_error"
+  # match "*a", :to => "application#routing_error"
+  match "*a", to: redirect('/')
 
-  def routing_error
-    render "404", :status => 404
-  end
 end

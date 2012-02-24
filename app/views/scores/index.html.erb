@@ -2,24 +2,19 @@
 
 <table>
   <tr>
+    <td>score</td>
     <td>user</td>
     <td>Zone id</td>
-    <td>score</td>
+    <td>game id</td>
     <td></td>
   </tr>
 <% @scores.each do |s|%>
   <tr>
-    <% if s.user %>
-    <td><%= link_to s.user.name, s.user %></td>
-    <% else %>
-    <td>EMPTY NAME</td>
-    <% end %>
-    <% if s.zone %>
-    <td><%= s.zone.id %></td>
-    <% else %>
-    <td>EMPTY ZONE</td>
-    <% end %>
     <td><%= s.value %></td>
+    <td><%= link_to s.user.name, s.user %></td>
+    <td><%= s.zone.id %></td>
+    <td><%= s.game.id %></td>
+
     <td><%= link_to 'Delete', s, method: :delete, confirm: "Are you sure?",  %></td>
   </tr>
 <% end %>

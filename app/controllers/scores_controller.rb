@@ -32,12 +32,11 @@ class ScoresController < ApplicationController
     @score = Score.new(value: params[:score][:value].to_i);
     @score.user = User.find_by_id(params[:user_id]);
     @score.zone = Zone.find_by_id(1)
+    @score.game = Game.find_by_id(1)
     @users_array = User.all.map { |user| [user.name, user.id] }
 
-    if !@score.zone or !@score.user
-      flash[:notice] = "Couldn't save score (undefined zone of user)"
-    elsif !Score.last_from_zone_and_user(@score.user, @score.zone, 5.second.ago).empty?
-      flash[:notice] = "Dont push too much"
+    if !@score.check_flood
+      flash[:notice] = "Flood Protection"
     elsif @score.save
       redirect_to @score, notice: "Score created"
       return
