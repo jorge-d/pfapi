@@ -1,7 +1,18 @@
-<% if notice %>
-<p class="notice"><%= notice %></p>
-<% end %>
-
 <h3><%= @user.name %></h3>
 
+<% if !@user.score.empty? %>
+<h3>Scores :</h3>
+<table>
+  <tr>
+    <td>Value</td>
+    <td>Date</td>
+  </tr>
+  <% @user.score.each do |s| %>
+  <tr>
+  <td><%= s.value %></td>
+  <td><%= s.updated_at.to_s(:displayDateScored) %></td>
+  </tr>
+  <% end %>
+</table>
+<% end %>
 <%= link_to 'go back', users_path %>

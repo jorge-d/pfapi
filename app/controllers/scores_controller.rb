@@ -1,17 +1,23 @@
 class ScoresController < ApplicationController
   before_filter :do_nothing, only: [:edit, :update]
+  before_filter :get_score, only: [:show, :destroy]
+
+  def get_score
+    @score = Score.find_by_id(params[:id]);
+
+    if !@score
+      return routing_error
+    end
+  end
 
   def do_nothing
     redirect_to Score, notice: "Action not possible"
   end
 
   def show
-    @score = Score.find_by_id(params[:id]);
   end
 
   def destroy
-    @score = Score.find_by_id(params[:id]);
-
     if (!@score.destroy)
       redirect_to @score, notice: "Could not delete score"
     end
@@ -30,11 +36,9 @@ class ScoresController < ApplicationController
 
     if !@score.zone or !@score.user
       flash[:notice] = "Couldn't save score (undefined zone of user)"
-    elsif !@score.user.score.empty? and !Score.last_from_zone_and_user(@score.user, @score.zone, 5.second.ago).empty?
+    elsif !Score.last_from_zone_and_user(@score.user, @score.zone, 5.second.ago).empty?
       flash[:notice] = "Dont push too much"
-    elsif !@score.save
-      flash[:notice] = "Couldn't save score"
-    else
+    elsif @score.save
       redirect_to @score, notice: "Score created"
       return
     end
