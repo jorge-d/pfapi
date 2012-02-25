@@ -22,4 +22,26 @@
 <h3>No user in database</h3>
 <% end %>
 
+<% if @zones.count %>
+<h3>Zones : </h3>
+<table>
+  <tr>
+    <td>id</td>
+    <td>latitude</td>
+    <td>longitude</td>
+  </tr>
+  <% @zones.each do |z| %>
+  <tr>
+    <td><%= z.id %></td>
+    <td><%= z.latitude %></td>
+    <td><%= z.longitude %></td>
+  </tr>
+  <% end %>
+</table>
+<% end %>
+
+<h3>Player is in <%= @lat %>, <%= @long %></h3>
+<p>His zone is : <%= @answer %></p>
+
 <h3><%= link_to 'add a new user', new_user_path %><h3>
+<h3><%= link_to 'add a new score', new_score_path %><h3>
