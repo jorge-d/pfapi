@@ -45,19 +45,6 @@ class UsersController < ApplicationController
   end
 
   def index
-    @lat = params[:lat].to_f
-    @long = params[:long].to_f
-    if (!validate_decimal_coordinates(@lat, @long))
-      render json: "invalid coordinates"
-      return
-    end
-    lt = get_zone_coordinates(@lat)
-    lg = get_zone_coordinates(@long)
-    if Zone.where(latitude: lt, longitude: lg).limit(1).empty?
-      z = Zone.new(latitude: lt, longitude: lg)
-      render json: "couldnt save zone" if !z.save()
-    end
-    @answer = [lt, lg]
     @users = User.all
     @zones = Zone.all
   end

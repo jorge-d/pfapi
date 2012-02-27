@@ -1,16 +1,38 @@
-<h3><%= @user.name %></h3>
+<h3><%= @user.name %> (id : <%= @user.id %>)</h3>
 
-<% if !@user.score.empty? %>
+<% if !@user.unlocked_zones.empty? %>
+<h3>Unlocked Zone:</h3>
+<table>
+  <tr>
+    <td>id</td>
+    <td>long</td>
+    <td>lat</td>
+    <td>Date</td>
+  </tr>
+  <% @user.unlocked_zones.each do |us| %>
+  <tr>
+  <td><%= us.id %></td>
+  <td><%= us.zone.longitude %></td>
+  <td><%= us.zone.latitude %></td>
+  <td><%= us.updated_at.to_s(:displayDateScored) %></td>
+  </tr>
+  <% end %>
+</table>
+<% end %>
+
+<% if !@user.scores.empty? %>
 <h3>Scores :</h3>
 <table>
   <tr>
+    <td>zone id</td>
     <td>Value</td>
     <td>Date</td>
   </tr>
-  <% @user.score.each do |s| %>
+  <% @user.scores.each do |s| %>
   <tr>
-  <td><%= s.value %></td>
-  <td><%= s.updated_at.to_s(:displayDateScored) %></td>
+    <td><%= s.zone.id %></td>
+    <td><%= s.value %></td>
+    <td><%= s.updated_at.to_s(:displayDateScored) %></td>
   </tr>
   <% end %>
 </table>

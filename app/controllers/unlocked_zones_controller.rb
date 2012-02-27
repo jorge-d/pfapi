@@ -1,0 +1,2 @@
+class UnlockedZonesController < ApplicationController
+end

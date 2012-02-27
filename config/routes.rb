@@ -3,6 +3,11 @@ Pfapi::Application.routes.draw do
   resources :scores
   resources :users
 
+  match 'get_zone_id' => 'ApiRequests#getZoneId'
+  match 'get_unlocked_zones' => 'ApiRequests#getUnlockedZones'
+  match 'get_score_from_zone' => 'ApiRequests#getScoreFromZone'
+  match 'get_score_from_player' => 'ApiRequests#getScoreFromPlayer'
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
