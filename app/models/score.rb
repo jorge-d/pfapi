@@ -15,7 +15,7 @@ class Score < ActiveRecord::Base
   before_save :check_flood
 
   def check_flood
-    if !Score.last_from_user(self.user, 59.seconds.ago).empty?
+    if !Score.last_from_user(self.user, 5.seconds.ago).empty?
       return false
     else
       return true

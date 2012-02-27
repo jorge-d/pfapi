@@ -7,6 +7,7 @@ Pfapi::Application.routes.draw do
   match 'get_unlocked_zones' => 'ApiRequests#getUnlockedZones'
   match 'get_score_from_zone' => 'ApiRequests#getScoreFromZone'
   match 'get_score_from_player' => 'ApiRequests#getScoreFromPlayer'
+  match 'send_score_from_player' => 'ApiRequests#sendScoreFromPlayer'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
