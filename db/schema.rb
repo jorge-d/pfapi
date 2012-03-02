@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120224224242) do
+ActiveRecord::Schema.define(:version => 20120301183200) do
 
   create_table "games", :force => true do |t|
     t.string   "name"
@@ -19,6 +19,16 @@ ActiveRecord::Schema.define(:version => 20120224224242) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
+
+  create_table "last_positions", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "zone_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "last_positions", ["user_id"], :name => "index_last_positions_on_user_id"
+  add_index "last_positions", ["zone_id"], :name => "index_last_positions_on_zone_id"
 
   create_table "scores", :force => true do |t|
     t.integer  "value"
@@ -48,8 +58,9 @@ ActiveRecord::Schema.define(:version => 20120224224242) do
     t.string   "email"
     t.string   "password"
     t.integer  "salt"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
+    t.string   "encrypted_password"
   end
 
   create_table "zones", :force => true do |t|

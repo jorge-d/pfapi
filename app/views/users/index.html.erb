@@ -1,11 +1,26 @@
+<h3>Games:</h3>
+<p>
+	<table>
+  		<tr>
+    		<td>name</td>
+    		<td>key</td>
+  		</tr>
+  		<% Game.all.each do |g| %>
+  		<tr>
+    		<td><%= g.name %></td>
+    		<td><%= g.api_key %></td>
+  		</tr>
+  <% end %>
+</table>
+</p>
 <% if @users.count %>
-<h3>Users are:</h3>
 <table>
   <tr>
     <td>salt</td>
     <td>name</td>
     <td>email</td>
     <td>password</td>
+    <td>encrypted password</td>
   </tr>
   <% @users.each do |user| %>
   <tr>
@@ -13,6 +28,7 @@
     <td><%= link_to user.name, user %></td>
     <td><%= user.email %></td>
     <td><%= user.password %></td>
+    <td><%= user.encrypted_password %></td>
     <td><%= link_to 'e', edit_user_path(user) %></td>
     <td><%= link_to 'x', user, confirm: 'are you sure?', method: :delete %></td>
   </tr>

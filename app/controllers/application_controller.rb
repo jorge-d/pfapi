@@ -46,7 +46,13 @@ class ApplicationController < ActionController::Base
     if coor >= 0
       return ((coor * 10).to_i).to_f / 10
     else
-      return (((coor * 10).to_i).to_f - 1) / 10
+      nbf = coor.to_f
+      nbi = coor.to_i
+      if ((coor * 10) - (coor * 10).to_i).to_i == 0
+        return (((coor * 10).to_i).to_f) / 10
+      else
+        return (((coor * 10).to_i).to_f - 1) / 10
+      end      
     end
   end
 end

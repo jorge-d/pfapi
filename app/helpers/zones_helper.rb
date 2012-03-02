@@ -7,11 +7,11 @@ module ZonesHelper
     end
     lt = get_zone_coordinates(lat)
     lg = get_zone_coordinates(long)
-    if Zone.where(latitude: lt, longitude: lg).limit(1).empty?
+    if !(z = Zone.where(latitude: lt, longitude: lg).limit(1).first)
       z = Zone.new(latitude: lt, longitude: lg)
       return false if !z.save()
     end
-    return true
+    return z
   end
 
 end

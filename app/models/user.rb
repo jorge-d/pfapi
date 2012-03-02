@@ -1,6 +1,10 @@
 class User < ActiveRecord::Base
+  require 'digest/md5'
+
   has_many :scores, dependent: :destroy
   has_many :unlocked_zones, dependent: :destroy
+  has_one :user_key, dependent: :destroy
+  has_one :last_position, dependent: :destroy
 
   validates_format_of :name, with: /^[-\w\_]+$/i, :allow_blank => false, :message => "should only contain letters, numbers, or -_"
   validates_format_of :email, with: /^[-a-z0-9_+\.]+\@([-a-z0-9]+\.)+[a-z0-9]{2,4}$/i, message: "Bad format"
@@ -12,16 +16,13 @@ class User < ActiveRecord::Base
   attr_protected :salt
 
   before_save :encrypt_password
-  before_create :generate_salt
 
-  def generate_salt
-    self.salt = rand(99)
+  def encrypt_string str
+    return Digest::MD5::hexdigest([self.name, self.salt.to_s, str].join(":"))
   end
 
   def encrypt_password
-    if password_changed?
-      self.password =
-        Digest::MD5::hexdigest([name, salt.to_s, password].join(":"))
-    end
+    self.salt = rand(99)
+    self.encrypted_password = Digest::MD5::hexdigest([name, salt.to_s, password].join(":"))
   end
 end

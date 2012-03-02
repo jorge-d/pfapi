@@ -6,7 +6,7 @@ module UnlockedZonesHelper
       return true
     end
     uz = UnlockedZone.new(user: user, zone: zone)
-    !uz.save()
+    uz.save()
     return false
   end
 end

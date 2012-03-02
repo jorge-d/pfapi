@@ -1,5 +1,21 @@
 <h3><%= @user.name %> (id : <%= @user.id %>)</h3>
-
+<h3>Last position</h3>
+<% if @user.last_position %>
+<table>
+  <tr>
+    <td>id</td>
+    <td>long</td>
+    <td>lat</td>
+  </tr>
+  <tr>
+  <td><%= @user.last_position.zone.id %></td>
+  <td><%= @user.last_position.zone.longitude %></td>
+  <td><%= @user.last_position.zone.latitude %></td>
+  </tr>
+</table>
+<% else %>
+  <p>NONE</p>
+<% end %>
 <% if !@user.unlocked_zones.empty? %>
 <h3>Unlocked Zone:</h3>
 <table>
