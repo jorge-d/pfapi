@@ -1,0 +1,8 @@
+www:
+ type: ruby
+ config:
+  ruby-version : 1.9.2
+   rack-env: production
+
+db:
+ type: postgresql
