@@ -4,4 +4,4 @@ www:
   ruby-version: 1.9.2
 
 db:
- type: postgresql
+ type: mysql
