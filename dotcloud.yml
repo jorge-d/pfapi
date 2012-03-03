@@ -1,7 +1,5 @@
 www:
  type: ruby
-
-hello:
  config:
   ruby-version: 1.9.2
 
