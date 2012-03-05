@@ -3,16 +3,17 @@ Pfapi::Application.routes.draw do
   resources :scores
   resources :users
 
-  match 'get_zone_id' => 'ApiRequests#getZoneId'
-  match 'get_zone_by_id' => 'ApiRequests#getZoneById'
+  match 'checkout_zone' => 'ApiRequests#checkoutZone'
+  match 'get_zone_informations_by_id' => 'ApiRequests#getZoneInformationsById'
   match 'get_unlocked_zones' => 'ApiRequests#getUnlockedZones'
-  match 'get_score_from_zone' => 'ApiRequests#getScoreFromZone'
+  match 'get_score_from_zone_by_id' => 'ApiRequests#getScoreFromZoneById'
   match 'get_unlocked_zones_number' => 'ApiRequests#getUnlockedZonesNumber'
-  match 'get_score_from_player' => 'ApiRequests#getScoreFromPlayer'
-  match 'send_score_from_player' => 'ApiRequests#sendScoreFromPlayer'
+  match 'get_best_score_from_player' => 'ApiRequests#getBestScoresFromPlayer'
+  match 'checkout_score' => 'ApiRequests#checkoutScore'
   match 'get_credentials' => 'ApiRequests#getCredentials'
   match 'unlock_zones_arround' => 'ApiRequests#unlockZonesArround'
   match 'get_players_in_zone' => 'ApiRequests#getPlayersInZone'
+  match 'get_total_score_from_player' => 'ApiRequests#getScoreTotalAmount'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
@@ -73,7 +74,7 @@ Pfapi::Application.routes.draw do
 
 
   ## sould handle routing errors
-  # match "*a", :to => "application#routing_error"
+  match "*a", :to => "application#routing_error"
   # match "*a", to: redirect('/')
 
 end

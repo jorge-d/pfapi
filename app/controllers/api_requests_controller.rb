@@ -4,13 +4,15 @@ class ApiRequestsController < ApplicationController
   include UsersHelper
 
   before_filter :getAndCheckUser, only: [
-    :sendScoreFromPlayer, :getScoreFromPlayer, :getZoneId, :getUnlockedZones, :getUnlockedZonesNumber,
-    :unlockZonesArround
+    :checkoutScore, :getBestScoresFromPlayer, :checkoutZone, :getUnlockedZones, :getUnlockedZonesNumber,
+    :unlockZonesArround, :getScoreTotalAmount
     ]
   before_filter :getAndCheckCoordinates, only: [
-    :getZoneId, :sendScoreFromPlayer, :unlockZonesArround, :getPlayersInZone
+    :checkoutZone, :checkoutScore, :unlockZonesArround, :getPlayersInZone
     ]
-  before_filter :getAndCheckGame, only: [:sendScoreFromPlayer, :getScoreFromPlayer, :getScoreFromZone]
+  before_filter :getAndCheckGame, only: [
+    :checkoutScore, :getBestScoresFromPlayer, :getScoreFromZoneById, :getScoreTotalAmount
+    ]
 
   ##############
   # VALIDATORS #
@@ -63,7 +65,7 @@ class ApiRequestsController < ApplicationController
   ###############
 
   # checkout the current zone and unlock it
-  def getZoneId
+  def checkoutZone
     answer = user_has_already_visited_zone(@user, @zone) # unlocks Zone if users never went there
     set_last_player_position(@user, @zone)
     render json: {unlocked_zone: @zone, already_visited: answer}
@@ -81,96 +83,109 @@ class ApiRequestsController < ApplicationController
     render json: {unlocked_zones: @user.unlocked_zones.count}
   end
 
-  # get the 10 latests scores from the game and zone passed on parameters
-  def getScoreFromZone
+  # get the 10 best scores from zone
+  def getScoreFromZoneById
     if !params[:zone_id]
       render json: "Missing parameter zone_id"
-      return
+    else
+      z = Zone.find_by_id(params[:zone_id])
+      if !z
+        render json: "Invalid zone"
+      else
+        sc = z.scores
+        res = sc.where(game_id: @game).order(:value).limit(10)
+        render json: res
+      end
     end
-    z = Zone.find_by_id(params[:zone_id])
-    if !z
-      render json: "Invalid zone"
-      return
-    end
-    sc = z.scores
-    res = sc.where(game_id: @game).limit(10)
-    render json: res
   end
 
   # get zone informations by its ID
-  def getZoneById
+  def getZoneInformationsById
     if !params[:zone_id]
       render json: "Missing parameter zone_id"
-      return
+    else
+      z = Zone.find_by_id(params[:zone_id])
+      if !z
+        render json: "Zone not found"
+      else
+        render json: {zone: z} # need a beter format
+      end
     end
-    z = Zone.find_by_id(params[:zone_id])
-    if !z
-      render json: "Zone not found"
-      return
-    end
-    render json: {zone: z} # need a beter format
   end
 
-  # get the 10 bests score from player
-  def getScoreFromPlayer
+  # get the bests score from player
+  def getBestScoresFromPlayer
     sc = @user.scores
-    if (params[:nb])
+    if (params[:nb].to_i > 0)
       res = sc.where(game_id: @game).order("value DESC").limit(params[:nb].to_i)
     else
-      res = sc.where(game_id: @game).order("value DESC").limit(10)
+      res = sc.where(game_id: @game).order("value DESC").limit(100)
     end
     render json: res
   end
   
+  def getScoreTotalAmount
+    s = @user.scores
+    res = 0
+    s.each do |t|
+      res += t.value
+    end
+    render json: {totalscore: res}
+  end
+
   # checkout the score on the zone and for the game passed on parameters
-  def sendScoreFromPlayer
+  def checkoutScore
     if !params[:value]
       render json: "Missing parameter value"
-      return
-    end
-    if @user.unlocked_zones.where(zone_id: @zone).first
-      set_last_player_position(@user, @zone)
-      @score = Score.new
-      @score.value = params[:value].to_i
-      @score.user = @user
-      @score.zone = @zone
-      @score.game = @game
-      if !@score.save
-        render json: @score.errors
-      else
-        render json: @score
-      end
+    elsif !(params[:value].to_i > 0)
+      render json: "Bad value"
     else
-      render json: "You need to unlock the zone first"
+      if !@user.unlocked_zones.where(zone_id: @zone).first
+        render json: "You need to unlock the zone first"
+      else
+        set_last_player_position(@user, @zone)
+        @score = Score.new
+        @score.value = params[:value].to_i
+        @score.user = @user
+        @score.zone = @zone
+        @score.game = @game
+        if !@score.save
+          render json: {error: @score.errors}
+        else
+          render json: @score
+        end
+      end
     end
   end
-  
+
   # get the users's key
   def getCredentials
     if !params[:login]
-      render json: "login missing"
+      ret = "login missing"
     elsif !params[:password]
-      render json: "password missing"
-    end
-    user = User.where(name: params[:login]).limit(1).first
-    if !user
-      render json: "User not found"
+      ret = "password missing"
     else
-      tmp = user.encrypt_string(params[:password])
-      if tmp == user.encrypted_password
-        render json: {key: user.encrypted_password}
+      user = User.where(name: params[:login]).limit(1).first
+      if !user
+        ret = "User not found"
       else
-        render json: "Invalid password"
+        tmp = user.encrypt_string(params[:password])
+        if tmp == user.encrypted_password
+          ret = {key: user.encrypted_password}
+        else
+          ret = "Invalid password"
+        end
       end
     end
+    render json: ret
   end
-  
+
   def unlockZonesArround
     if !@user.unlocked_zones.where(zone_id: @zone).first
-      render json: "You did not have unlocked the zone"
+      render json: "This zone is still locked for you"
       return
     end
-    
+
     set_last_player_position(@user, @zone)
     tmp = @user.unlocked_zones.count
     hash = [[@zone.latitude - 0.1, @zone.longitude - 0.1], [@zone.latitude - 0.1, @zone.longitude],
@@ -195,7 +210,13 @@ class ApiRequestsController < ApplicationController
   end
 
   def getPlayersInZone
-    a = @zone.last_positions
-    render json: a
+    u = @zone.last_positions
+    res = Hash.new
+    i = 0
+    u.each do |t|
+      res[i] = {login: t.user.name, last_seen: t.user.updated_at}
+      i = i + 1
+    end
+    render json: res
   end
 end

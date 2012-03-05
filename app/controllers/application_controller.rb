@@ -52,7 +52,7 @@ class ApplicationController < ActionController::Base
         return (((coor * 10).to_i).to_f) / 10
       else
         return (((coor * 10).to_i).to_f - 1) / 10
-      end      
+      end
     end
   end
 end
