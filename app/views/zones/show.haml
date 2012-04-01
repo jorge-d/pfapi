@@ -7,10 +7,12 @@
         %th Value
         %th Zone
         %th User
+        %th Game
         %th Date
       - @scores.each do |s|
         %tr
           %td #{s.value}
           %td= link_to(s.zone.id, s.zone)
           %td= link_to(s.user.name, s.user)
+          %td= link_to(s.game.name, s.game)
           %td= s.updated_at.to_s(:displayDateScored)
