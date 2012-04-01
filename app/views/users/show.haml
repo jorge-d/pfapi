@@ -1,0 +1,29 @@
+.user-informations
+  .last-position
+    %h1= @user.name
+    %p{style: "color:red"} Player's credential (user_key) is #{@user.encrypted_password}
+    - if !@user.last_position
+      %p Player haven't played yet
+    - else
+      %p
+        Player was seen on this
+        =link_to('zone', @user.last_position.zone)
+  .best-scores
+    %h3 Best score
+    - if @best_scores.empty?
+      %p Players hasn't scored yet
+    - else
+      %p
+        =@best_scores.first.value
+        on this
+        =link_to('zone', @best_scores.first.zone)
+        for this
+        =link_to('game', @best_scores.first.game)
+    %p= link_to("See all scores", user_scores_path(@user))
+  .unlocked-zones
+    %h3 Unlocked Zones:
+    - if @unlocked_zones.empty?
+      %p Players haven't unlocked any zone yet
+    -else
+      %p Player has unlocked #{@unlocked_zones.count} zones
+    %p= link_to("See all unlocked zones", user_unlocked_zones_path(@user))

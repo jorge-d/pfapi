@@ -5,8 +5,9 @@ class UsersController < ApplicationController
     @user = User.find_by_id(params[:id])
     if (!@user)
       redirect_to User, notice: "User not found"
-      false
+      return false
     end
+    @unlocked_zones = @user.unlocked_zones
     true
   end
 
@@ -42,6 +43,7 @@ class UsersController < ApplicationController
   end
 
   def show
+    @best_scores = @user.scores.order("value DESC").limit(10)
   end
 
   def index

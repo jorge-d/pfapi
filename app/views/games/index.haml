@@ -1,0 +1,17 @@
+.game-list
+  %h1 Game list
+  - if @games.empty?
+    %p There isn't any game present in this server
+  - else
+    %ul
+      - @games.each do |game|
+        %li
+          = link_to(game.name, game)
+          %ul
+            %li Api_key (game_id) is '#{game.api_key}'
+            - if game.scores && s = game.scores.order('value DESC').limit(1).first
+              %li
+                Best score was #{s.value} by
+                =link_to(s.user.name, s.user)
+            - else
+              %li Nobody scored yet for this game

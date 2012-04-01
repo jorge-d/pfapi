@@ -1,0 +1,22 @@
+.unlocked-zone-list
+  %h1
+    Zones unlocked by
+    = link_to(@user.name, @user)
+  %table{style:"border: 1px solid black; width:50%; text-align: center"}
+    %tr
+      %th Zone id
+      %th Latitude
+      %th Longitude
+      %th Best score
+      %th Date unlocked
+    - @unlocked_zones.each do |uz|
+      - s = @user.scores.where(zone_id: uz.zone.id).order("value DESC").limit(1).first
+      %tr
+        %td= link_to(uz.zone.id, uz.zone)
+        %td #{uz.zone.latitude}
+        %td #{uz.zone.longitude}
+        - if s
+          %td #{s.value}
+        - else
+          %td none
+        %td= uz.updated_at.to_s(:displayDateScored)

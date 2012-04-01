@@ -1,7 +1,11 @@
 Pfapi::Application.routes.draw do
 
-  resources :scores
-  resources :users
+  resources :zones
+  resources :games
+  resources :users do
+    resources :scores
+    resources :unlocked_zones
+  end
 
   scope 'api' do 
     get 'checkout_zone', to: 'ApiRequests#checkout_zone' # Convert into post after tests

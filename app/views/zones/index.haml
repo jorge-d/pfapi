@@ -1,0 +1,27 @@
+.zone-list
+  %h1
+    Zones
+  %table{style:"border: 1px solid black; width:70%; text-align: center"}
+    %tr
+      %th Zone id
+      %th Latitude
+      %th Longitude
+      %th Best score
+      %th User who has discovered zone
+      %th Date unlocked
+    - @zones.each do |zone|
+      - s = zone.scores.order("value DESC").limit(1).first
+      - unlocked_zone = zone.unlocked_zones.order("created_at ASC").limit(1).first
+      %tr
+        %td= link_to(zone.id, zone)
+        %td #{zone.latitude}
+        %td #{zone.longitude}
+        - if s
+          %td= link_to(s.value, s.user)
+        - else
+          %td none
+        - if unlocked_zone && unlocked_zone.user
+          %td= link_to(unlocked_zone.user.name, unlocked_zone.user)
+        - else
+          %td
+        %td= zone.updated_at.to_s(:displayDateScored)

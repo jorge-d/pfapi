@@ -9,5 +9,6 @@
   %body
     - if notice
       .notice
-        notice
+        = flash[:notice]
+    = link_to 'go home', users_path    
     #application= yield

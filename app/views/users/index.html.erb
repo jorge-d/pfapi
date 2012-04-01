@@ -1,9 +1,11 @@
+<h3><%= link_to 'add a new user', new_user_path %><h3>
+
 <h3>Games:</h3>
 <p>
 	<table>
   		<tr>
     		<td>name</td>
-    		<td>key</td>
+    		<td>game_id</td>
   		</tr>
   		<% Game.all.each do |g| %>
   		<tr>
@@ -20,7 +22,7 @@
     <td>name</td>
     <td>email</td>
     <td>password</td>
-    <td>encrypted password</td>
+    <td>user_key</td>
   </tr>
   <% @users.each do |user| %>
   <tr>
@@ -56,6 +58,3 @@
 </table>
 <% end %>
 
-<h3>Player is in <%= @lat %>, <%= @long %></h3>
-<h3><%= link_to 'add a new user', new_user_path %><h3>
-<h3><%= link_to 'add a new score', new_score_path %><h3>

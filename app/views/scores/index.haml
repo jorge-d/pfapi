@@ -1,0 +1,16 @@
+%h1
+  Scores of player #{@user.name}:
+  
+.score-list
+  %table{style:"border: 1px solid black; width:50%; text-align: center"}
+    %tr
+      %th Value
+      %th Zone
+      %th Game
+      %th Date
+    - @scores.each do |s|
+      %tr
+        %td #{s.value}
+        %td= link_to(s.zone.id, s.zone)
+        %td= link_to(s.game.name, s.game)
+        %td= s.updated_at.to_s(:displayDateScored)
