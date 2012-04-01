@@ -3,17 +3,19 @@ Pfapi::Application.routes.draw do
   resources :scores
   resources :users
 
-  match 'checkout_zone' => 'ApiRequests#checkoutZone'
-  match 'get_zone_informations_by_id' => 'ApiRequests#getZoneInformationsById'
-  match 'get_unlocked_zones' => 'ApiRequests#getUnlockedZones'
-  match 'get_score_from_zone_by_id' => 'ApiRequests#getScoreFromZoneById'
-  match 'get_unlocked_zones_number' => 'ApiRequests#getUnlockedZonesNumber'
-  match 'get_best_score_from_player' => 'ApiRequests#getBestScoresFromPlayer'
-  match 'checkout_score' => 'ApiRequests#checkoutScore'
-  match 'get_credentials' => 'ApiRequests#getCredentials'
-  match 'unlock_zones_arround' => 'ApiRequests#unlockZonesArround'
-  match 'get_players_in_zone' => 'ApiRequests#getPlayersInZone'
-  match 'get_total_score_from_player' => 'ApiRequests#getScoreTotalAmount'
+  scope 'api' do 
+    post 'checkout_zone', to: 'ApiRequests#checkout_zone'
+    post 'unlock_zones_arround', to: 'ApiRequests#unlock_zones_arround'
+    post 'checkout_score', to: 'ApiRequests#checkout_score'
+    get 'zone_informations_by_id', to: 'ApiRequests#zone_informations_by_id'
+    get 'unlocked_zones', to: 'ApiRequests#unlocked_zones'
+    get 'score_from_zone_by_id', to: 'ApiRequests#score_from_zone_by_id'
+    get 'unlocked_zones_number', to: 'ApiRequests#unlocked_zones_number'
+    get 'best_score_from_player' => 'ApiRequests#best_score_from_player'
+    get 'credentials' => 'ApiRequests#credentials'
+    get 'players_in_zone' => 'ApiRequests#players_in_zone'
+    get 'total_score_from_player' => 'ApiRequests#total_score_from_player'
+  end
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

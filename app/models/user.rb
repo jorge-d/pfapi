@@ -17,6 +17,10 @@ class User < ActiveRecord::Base
 
   before_save :encrypt_password
 
+  def as_json
+    "penis"
+  end
+
   def encrypt_string str
     return Digest::MD5::hexdigest([self.name, self.salt.to_s, str].join(":"))
   end
@@ -24,5 +28,9 @@ class User < ActiveRecord::Base
   def encrypt_password
     self.salt = rand(99)
     self.encrypted_password = Digest::MD5::hexdigest([name, salt.to_s, password].join(":"))
+  end
+  
+  def best_scores_by_game game, nb
+    self.scores.where(game_id: game).order("value DESC").limit(nb)
   end
 end

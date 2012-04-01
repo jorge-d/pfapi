@@ -4,14 +4,14 @@ class ApiRequestsController < ApplicationController
   include UsersHelper
 
   before_filter :getAndCheckUser, only: [
-    :checkoutScore, :getBestScoresFromPlayer, :checkoutZone, :getUnlockedZones, :getUnlockedZonesNumber,
-    :unlockZonesArround, :getScoreTotalAmount
+    :checkout_score, :best_score_from_player, :unlock_zones_arround, :unlocked_zones, :unlocked_zones_number,
+    :checkout_zone, :total_score_from_player
     ]
   before_filter :getAndCheckCoordinates, only: [
-    :checkoutZone, :checkoutScore, :unlockZonesArround, :getPlayersInZone
+    :unlock_zones_arround, :checkout_score, :checkout_zone, :players_in_zone
     ]
   before_filter :getAndCheckGame, only: [
-    :checkoutScore, :getBestScoresFromPlayer, :getScoreFromZoneById, :getScoreTotalAmount
+    :checkout_score, :best_score_from_player, :score_from_zone_by_id, :total_score_from_player
     ]
 
   ##############
@@ -32,15 +32,14 @@ class ApiRequestsController < ApplicationController
 
   # check if the coordinates are good and create zone if i doesn't exists, then get it
   def getAndCheckCoordinates
-    if !params[:lat] or !params[:long]
-      render json: "Missing coordinates"
+    if !params[:latitude] or !params[:longitude]
+      render json: "Missing coordinates (params latitude=X&longitude=X)"
       return false
     end
-    lat = params[:lat].to_f
-    long = params[:long].to_f
-    # don't need to convert params before sending (already done in function)
+    lat = params[:latitude].to_f
+    long = params[:longitude].to_f
     if !(@zone = create_zone_if_doesnt_exists lat, long)
-      render json: "Invalid coordinates"
+      render json: "Invalid coordinates: read http://www.sunearthtools.com/dp/tools/conversion.php?lang=fr"
       return false
     end
     @latitude = get_zone_coordinates(lat)
@@ -51,7 +50,7 @@ class ApiRequestsController < ApplicationController
   # check if the game api_key is ok (for scores and other small things)
   def getAndCheckGame
     if !params[:game_id]
-      render json: "Missing game_id"
+      render json: "Missing game_id (params game_id=X)"
     elsif !(@game = Game.where(api_key: params[:game_id]).first)
       render json: "Game not found"
     else
@@ -65,26 +64,26 @@ class ApiRequestsController < ApplicationController
   ###############
 
   # checkout the current zone and unlock it
-  def checkoutZone
+  def checkout_zone
     answer = user_has_already_visited_zone(@user, @zone) # unlocks Zone if users never went there
     set_last_player_position(@user, @zone)
     render json: {unlocked_zone: @zone, already_visited: answer}
   end
 
   # returns an array containing all the zones unlocked by the user
-  def getUnlockedZones
+  def unlocked_zones
     res = @user.unlocked_zones.map {
       |z| [zone_id: z.zone.id, latitude: z.zone.latitude, longitude: z.zone.longitude] }
     render json: res
   end
 
   # returns the number of zone unlocked (may be used for ingame bonuses)
-  def getUnlockedZonesNumber
+  def unlocked_zones_number
     render json: {unlocked_zones: @user.unlocked_zones.count}
   end
 
   # get the 10 best scores from zone
-  def getScoreFromZoneById
+  def score_from_zone_by_id
     if !params[:zone_id]
       render json: "Missing parameter zone_id"
     else
@@ -100,7 +99,7 @@ class ApiRequestsController < ApplicationController
   end
 
   # get zone informations by its ID
-  def getZoneInformationsById
+  def zone_informations_by_id
     if !params[:zone_id]
       render json: "Missing parameter zone_id"
     else
@@ -108,23 +107,22 @@ class ApiRequestsController < ApplicationController
       if !z
         render json: "Zone not found"
       else
-        render json: {zone: z} # need a beter format
+        render json: z # need a beter format
       end
     end
   end
 
   # get the bests score from player
-  def getBestScoresFromPlayer
-    sc = @user.scores
-    if (params[:nb].to_i > 0)
-      res = sc.where(game_id: @game).order("value DESC").limit(params[:nb].to_i)
+  def best_score_from_player
+    if params[:nb].to_i > 0
+      nb = params[:nb].to_i
     else
-      res = sc.where(game_id: @game).order("value DESC").limit(100)
+      nb = 10;
     end
-    render json: res
+    render json: @user.best_scores_by_game(@game, nb)
   end
   
-  def getScoreTotalAmount
+  def total_score_from_player
     s = @user.scores
     res = 0
     s.each do |t|
@@ -134,7 +132,7 @@ class ApiRequestsController < ApplicationController
   end
 
   # checkout the score on the zone and for the game passed on parameters
-  def checkoutScore
+  def checkout_score
     if !params[:value]
       render json: "Missing parameter value"
     elsif !(params[:value].to_i > 0)
@@ -159,7 +157,7 @@ class ApiRequestsController < ApplicationController
   end
 
   # get the users's key
-  def getCredentials
+  def credentials
     if !params[:login]
       ret = "login missing"
     elsif !params[:password]
@@ -180,7 +178,7 @@ class ApiRequestsController < ApplicationController
     render json: ret
   end
 
-  def unlockZonesArround
+  def unlock_zones_arround
     if !@user.unlocked_zones.where(zone_id: @zone).first
       render json: "This zone is still locked for you"
       return
@@ -209,7 +207,7 @@ class ApiRequestsController < ApplicationController
     render json: {new_zone_unlocked: tmp, results: res}
   end
 
-  def getPlayersInZone
+  def players_in_zone
     u = @zone.last_positions
     res = Hash.new
     i = 0
