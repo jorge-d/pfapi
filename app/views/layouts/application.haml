@@ -1,0 +1,13 @@
+!!! 5
+%html
+  %head
+    %title PFA API
+    = stylesheet_link_tag "application", :media => "all"
+    = javascript_include_tag "application"
+    = csrf_meta_tags
+    %link{ :rel => "shortcut icon", :href => "/favicon.ico", :type => "image/x-icon"}/
+  %body
+    - if notice
+      .notice
+        notice
+    #application= yield

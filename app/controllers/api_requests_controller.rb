@@ -1,5 +1,4 @@
 class ApiRequestsController < ApplicationController
-  include UnlockedZonesHelper
   include ZonesHelper
   include UsersHelper
 
@@ -11,7 +10,7 @@ class ApiRequestsController < ApplicationController
     :unlock_zones_arround, :checkout_score, :checkout_zone, :players_in_zone
     ]
   before_filter :getAndCheckGame, only: [
-    :checkout_score, :best_score_from_player, :score_from_zone_by_id, :total_score_from_player
+    :checkout_score, :best_score_from_player, :best_score_from_zone_by_id, :total_score_from_player
     ]
 
   ##############
@@ -20,9 +19,9 @@ class ApiRequestsController < ApplicationController
 
   # check if the user is correct
   def getAndCheckUser
-    if !params[:user_id]
-      render json: "Missing user_id"
-    elsif !(@user = User.where(encrypted_password: params[:user_id]).first)
+    if !params[:user_key]
+      render json: "Missing user_key"
+    elsif !(@user = User.where(encrypted_password: params[:user_key]).first)
       render json: "User not found"
     else
       return true
@@ -38,7 +37,7 @@ class ApiRequestsController < ApplicationController
     end
     lat = params[:latitude].to_f
     long = params[:longitude].to_f
-    if !(@zone = create_zone_if_doesnt_exists lat, long)
+    if !(@zone = create_zone_if_doesnt_exists(lat, long))
       render json: "Invalid coordinates: read http://www.sunearthtools.com/dp/tools/conversion.php?lang=fr"
       return false
     end
@@ -65,35 +64,32 @@ class ApiRequestsController < ApplicationController
 
   # checkout the current zone and unlock it
   def checkout_zone
-    answer = user_has_already_visited_zone(@user, @zone) # unlocks Zone if users never went there
-    set_last_player_position(@user, @zone)
+    answer = @user.checkout_zone @zone
+    @user.set_last_position @zone
     render json: {unlocked_zone: @zone, already_visited: answer}
   end
 
   # returns an array containing all the zones unlocked by the user
   def unlocked_zones
-    res = @user.unlocked_zones.map {
-      |z| [zone_id: z.zone.id, latitude: z.zone.latitude, longitude: z.zone.longitude] }
-    render json: res
+    render json: @user.get_unlocked_zones
   end
 
   # returns the number of zone unlocked (may be used for ingame bonuses)
   def unlocked_zones_number
-    render json: {unlocked_zones: @user.unlocked_zones.count}
+    render json: {unlocked_zones_number: @user.unlocked_zones.count}
   end
 
-  # get the 10 best scores from zone
-  def score_from_zone_by_id
+  # get the best scores from zone
+  def best_score_from_zone_by_id
     if !params[:zone_id]
       render json: "Missing parameter zone_id"
     else
-      z = Zone.find_by_id(params[:zone_id])
-      if !z
+      zone = Zone.find_by_id(params[:zone_id])
+      if !zone
         render json: "Invalid zone"
       else
-        sc = z.scores
-        res = sc.where(game_id: @game).order(:value).limit(10)
-        render json: res
+        params[:nb] ||= 10
+        render json: zone.best_scores_in_zone(@game, params[:nb])
       end
     end
   end
@@ -114,44 +110,25 @@ class ApiRequestsController < ApplicationController
 
   # get the bests score from player
   def best_score_from_player
-    if params[:nb].to_i > 0
-      nb = params[:nb].to_i
-    else
-      nb = 10;
-    end
-    render json: @user.best_scores_by_game(@game, nb)
+    params[:nb] ||= 10
+    render json: @user.best_scores_by_game(@game, params[:nb])
   end
   
   def total_score_from_player
-    s = @user.scores
-    res = 0
-    s.each do |t|
-      res += t.value
-    end
-    render json: {totalscore: res}
+    render json: {totalscore: @user.get_total_score(@game)}
   end
 
   # checkout the score on the zone and for the game passed on parameters
   def checkout_score
-    if !params[:value]
-      render json: "Missing parameter value"
-    elsif !(params[:value].to_i > 0)
+    if !(params[:value].to_i > 0)
       render json: "Bad value"
     else
       if !@user.unlocked_zones.where(zone_id: @zone).first
         render json: "You need to unlock the zone first"
       else
-        set_last_player_position(@user, @zone)
-        @score = Score.new
-        @score.value = params[:value].to_i
-        @score.user = @user
-        @score.zone = @zone
-        @score.game = @game
-        if !@score.save
-          render json: {error: @score.errors}
-        else
-          render json: @score
-        end
+        @user.set_last_position(@zone)
+        @score = Score.create(value: params[:value].to_i, user: @user, zone: @zone, game: @game)
+        render json: @score
       end
     end
   end
@@ -183,37 +160,15 @@ class ApiRequestsController < ApplicationController
       render json: "This zone is still locked for you"
       return
     end
-
-    set_last_player_position(@user, @zone)
-    tmp = @user.unlocked_zones.count
-    hash = [[@zone.latitude - 0.1, @zone.longitude - 0.1], [@zone.latitude - 0.1, @zone.longitude],
-            [@zone.latitude - 0.1, @zone.longitude + 0.1], [@zone.latitude, @zone.longitude - 0.1],
-            [@zone.latitude, @zone.longitude + 0.1], [@zone.latitude + 0.1, @zone.longitude - 0.1],
-            [@zone.latitude + 0.1, @zone.longitude], [@zone.latitude + 0.1, @zone.longitude + 0.1]]
-    i = 0
-    res = Hash.new
-    hash.each do |h|
-      if !(z = create_zone_if_doesnt_exists(h[0], h[1]))
-        render json: "Error creating zone"
-        return
-      end
-       # unlocks Zone if users never went there
-      if user_has_already_visited_zone(@user, z)
-        res[i] = {id: z.id, latitude: z.latitude, longitude: z.longitude}
-        i = i + 1
-      end
-    end
-    tmp = @user.unlocked_zones.count - tmp
-    render json: {new_zone_unlocked: tmp, results: res}
+    ret = @user.unlock_zones_arround(@zone)
+    render json: {new_zone_unlocked: ret.count, results: ret}
   end
 
   def players_in_zone
     u = @zone.last_positions
-    res = Hash.new
-    i = 0
+    res = Array.new
     u.each do |t|
-      res[i] = {login: t.user.name, last_seen: t.user.updated_at}
-      i = i + 1
+      res << {login: t.user.name, last_seen: t.user.updated_at}
     end
     render json: res
   end

@@ -4,12 +4,12 @@ Pfapi::Application.routes.draw do
   resources :users
 
   scope 'api' do 
-    post 'checkout_zone', to: 'ApiRequests#checkout_zone'
-    post 'unlock_zones_arround', to: 'ApiRequests#unlock_zones_arround'
-    post 'checkout_score', to: 'ApiRequests#checkout_score'
+    get 'checkout_zone', to: 'ApiRequests#checkout_zone' # Convert into post after tests
+    get 'unlock_zones_arround', to: 'ApiRequests#unlock_zones_arround' # Convert into post after tests
+    get 'checkout_score', to: 'ApiRequests#checkout_score' # Convert into post after tests
     get 'zone_informations_by_id', to: 'ApiRequests#zone_informations_by_id'
     get 'unlocked_zones', to: 'ApiRequests#unlocked_zones'
-    get 'score_from_zone_by_id', to: 'ApiRequests#score_from_zone_by_id'
+    get 'best_score_from_zone_by_id', to: 'ApiRequests#best_score_from_zone_by_id'
     get 'unlocked_zones_number', to: 'ApiRequests#unlocked_zones_number'
     get 'best_score_from_player' => 'ApiRequests#best_score_from_player'
     get 'credentials' => 'ApiRequests#credentials'
