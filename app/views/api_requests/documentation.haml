@@ -1,0 +1,95 @@
+.api-documentation
+%h3 How do I use this API?
+
+%table{style: "border: 1px solid black; width: 70%; text-align: center"}
+  %tr
+    %th Method
+    %th Route
+  %tr
+    %td POST
+    %td /api/checkout_zone
+  %tr
+    %td POST
+    %td /api/unlock_zones_arround
+  %tr
+    %td POST
+    %td /api/checkout_score
+  %tr
+    %td GET
+    %td /api/zone_informations_by_id
+  %tr
+    %td GET
+    %td /api/unlocked_zones
+  %tr
+    %td GET
+    %td /api/best_score_from_zone_by_id
+  %tr
+    %td GET
+    %td /api/unlocked_zones_number
+  %tr
+    %td GET
+    %td /api/best_score_from_player
+  %tr
+    %td GET
+    %td /api/credentials
+  %tr
+    %td GET
+    %td /api/players_in_zone
+  %tr
+    %td GET
+    %td /api/total_score_from_player
+  %tr
+%h3 First of all...
+%ul
+  %li
+    Create a
+    =link_to 'user', new_user_path
+  %li
+    If you forget your password, you can see it on the
+    =link_to 'index page', users_path
+    for the moment
+  %li
+    get your user_key by requesting (GET method of course) it on '/api/credentials' (with your password + username in parameter)
+    %br
+    The user_key will be used in 90% of the requests, so keep it somewhere
+    %br
+    ex: #{request.host}/api/credentials?login=keny&password=toto42
+  %li A game should already exist
+  %li
+    The list of available games is
+    = link_to 'here', games_path
+  %li Get the game api_key (which will be called game_id in all the requests) on the page above
+%ul
+
+%h3 Let's start slowly...
+%ul
+  %li You need to CHECKOUT the zone where you are
+  %li If you don't checkout any zone, you won't be able to score
+  %li
+    Checking out a zone example:
+    %br
+    #{request.host}/api/checkout_zone?user_id={user_key}&latitude=X&longitude=X (It's a POST)
+  %li
+    Now You can send your score to the server, use a POST request to send it:
+    %br
+    #{request.host}/api/checkout_score?user_id={user_key}&latitude=X&longitude=X&game_id={game_api_key}&value=XXX (value must be greater than 0...)
+  %li If you are very good, you may be able to unlock every zones around you
+  %li
+    To do this, the request shall be as follows:
+    %br #{request.host}/api/unlock_zones_arround?user_id={user_key}&latitude=X&longitude=X (POST again)
+  %li Now that you have unlocked every zones around you, you may want some informations about you or the zones...
+
+%h3 Getting informations
+%ul
+  %li Get informations on a zone based on its ID (and not its coordinates) : #{request.host}/api/zone_informations_by_id?zone_id=X
+  %li
+    Get the best scores on a zone from its ID (and not its coordinates) :
+    #{request.host}/api/best_score_from_zone_by_id?zone_id=X&game_id={game_api_key}
+  %li Get the list of the zones you have already unlocked : #{request.host}/api/unlocked_zones?user_id={user_key}
+  %li Get the number of zones you have unlocked : #{request.host}/api/unlocked_zones_number?user_id={user_key}
+  %li
+    Get you best scores: #{request.host}/api/best_score_from_player?user_id={user_key}&game_id={game_api_key}&nb={number_of_answers}
+    %br
+    Notice that the parameter nb is optional (10 by default)
+  %li Get the list of player who were recently seen on a given zone : #{request.host}/api/players_in_zone?latitude=X&longitude=X
+  %li Get the total score of a player in a given game: #{request.host}/api/total_score_from_player?user_id={user_key}&game_id={game_api_key}

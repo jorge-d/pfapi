@@ -8,9 +8,10 @@ Pfapi::Application.routes.draw do
   end
 
   scope 'api' do 
-    get 'checkout_zone', to: 'ApiRequests#checkout_zone' # Convert into post after tests
-    get 'unlock_zones_arround', to: 'ApiRequests#unlock_zones_arround' # Convert into post after tests
-    get 'checkout_score', to: 'ApiRequests#checkout_score' # Convert into post after tests
+    get 'documentation', to: 'ApiRequests#documentation'
+    post 'checkout_zone', to: 'ApiRequests#checkout_zone' # Convert into post after tests
+    post 'unlock_zones_arround', to: 'ApiRequests#unlock_zones_arround' # Convert into post after tests
+    post 'checkout_score', to: 'ApiRequests#checkout_score' # Convert into post after tests
     get 'zone_informations_by_id', to: 'ApiRequests#zone_informations_by_id'
     get 'unlocked_zones', to: 'ApiRequests#unlocked_zones'
     get 'best_score_from_zone_by_id', to: 'ApiRequests#best_score_from_zone_by_id'

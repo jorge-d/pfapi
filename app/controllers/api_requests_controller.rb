@@ -13,6 +13,9 @@ class ApiRequestsController < ApplicationController
     :checkout_score, :best_score_from_player, :best_score_from_zone_by_id, :total_score_from_player
     ]
 
+  def documentation
+  end
+
   ##############
   # VALIDATORS #
   ##############
