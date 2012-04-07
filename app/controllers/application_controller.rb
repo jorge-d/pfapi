@@ -16,6 +16,14 @@ class ApplicationController < ActionController::Base
     if session[:user].present? && session[:user]
       true
     else
+      false
+    end
+  end 
+
+  def is_logged_or_redirect
+    if is_logged
+      return true
+    else
       redirect_to :signin
       false
     end

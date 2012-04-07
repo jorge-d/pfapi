@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_filter :getUser, only: [:edit, :show, :update, :destroy]
-  before_filter :is_logged, only: [:edit, :show, :destroy, :logout, :update]
+  before_filter :is_logged_or_redirect, only: [:edit, :show, :destroy, :logout, :update]
 
   def getUser
     @user = User.find_by_id(params[:id])
@@ -42,6 +42,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(params[:user]);
     if @user.save
+      session[:user] = @user
       redirect_to @user, notice: "User successfully created"
     else
       render :new
