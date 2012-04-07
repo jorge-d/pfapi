@@ -6,8 +6,14 @@ gem 'rails', '3.2.2'
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 gem "twitter-bootstrap-rails"
-gem 'sqlite3'
-# gem 'pg'
+
+group :development, :test do
+  gem "sqlite3"
+end
+
+group :production do
+ gem 'pg'
+end
 
 # Gems used only for assets and not required
 # in production environments by default.
