@@ -75,5 +75,8 @@ class UsersController < ApplicationController
   def index
     @users = User.all
     @zones = Zone.all
+    @zones_with_scores = @zones.map do |m|
+      [m.latitude, m.longitude]
+    end
   end
 end

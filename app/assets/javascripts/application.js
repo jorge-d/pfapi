@@ -14,3 +14,30 @@
 //= require jquery_ujs
 //= require twitter/bootstrap
 //= require_tree .
+
+function initialize() {
+  el = $('#map-canvas')
+  if (!el.length)
+    return;
+
+  var myOptions = {
+    center: new google.maps.LatLng(0, 0),
+    zoom: 3,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  };
+
+  var map = new google.maps.Map(document.getElementById("map-canvas"),
+      myOptions);
+
+  points = el.data('map');
+
+  for (var i = 0; i < points.length; i++)
+  {
+    new google.maps.Marker({
+      position: new google.maps.LatLng(points[i][0], points[i][1]),
+      map: map
+    });
+  }
+}
+
+$(document).ready(initialize())
