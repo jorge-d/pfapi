@@ -8,6 +8,8 @@ class Score < ActiveRecord::Base
   validates :zone_id, presence: true
   validates :game_id, presence: true
 
+  scope :best, order('value DESC').limit(1)
+
   scope :recents, order('updated_at DESC')
 
   scope :last_from_user, lambda {

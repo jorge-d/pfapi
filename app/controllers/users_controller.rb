@@ -76,7 +76,13 @@ class UsersController < ApplicationController
     @users = User.all
     @zones = Zone.all
     @zones_with_scores = @zones.map do |m|
-      [m.latitude, m.longitude]
+      sc = m.scores.best.first
+      if sc
+        best = sc.value
+      else
+        best = 0
+      end
+      [m.latitude, m.longitude, best]
     end
   end
 end
