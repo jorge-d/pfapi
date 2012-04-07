@@ -7,6 +7,9 @@ Pfapi::Application.routes.draw do
     resources :unlocked_zones
   end
 
+  match 'signin', to: 'Users#signin'
+  match 'logout', to: 'Users#logout'
+
   scope 'api' do 
     get 'documentation', to: 'ApiRequests#documentation'
     post 'checkout_zone', to: 'ApiRequests#checkout_zone' # Convert into post after tests

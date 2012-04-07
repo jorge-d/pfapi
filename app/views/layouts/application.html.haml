@@ -24,18 +24,25 @@
             %span.icon-bar
             %span.icon-bar
             %span.icon-bar
-          %a.brand{:href => "#"}Pfapi
+          %a.brand{:href => "/"}Pfapi
           .container.nav-collapse
             %ul.nav
-              %li= link_to "Link 1", "/path1"
-              %li= link_to "Link 2", "/path2"
-              %li= link_to "Link 3", "/path3"
+              %li= link_to "Users", users_path()
+              %li= link_to "Games", games_path()
+              %li= link_to "Zones", zones_path()
+              - if session[:user].present? && session[:user]
+                %li= link_to "logout", "/logout"
+              - else
+                %li= link_to "Sign in", "/signin"
 
     .container
 
       .content
         .row
           .span9
+            - if flash[:notice]
+              .warning
+                = flash[:notice]
             = yield
           .span3
             .well.sidebar-nav

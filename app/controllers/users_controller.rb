@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   before_filter :getUser, only: [:edit, :show, :update, :destroy]
+  before_filter :is_logged, only: [:edit, :show, :destroy, :logout, :update]
 
   def getUser
     @user = User.find_by_id(params[:id])
@@ -18,6 +19,26 @@ class UsersController < ApplicationController
     redirect_to User, notice: "User deleted"
   end
 
+  def logout
+    session.delete :user
+    redirect_to :signin, notice: "You are not logged in anymore"
+  end
+
+  def signin
+    if params[:user]
+      user = User.where(name: params[:user][:name]).first
+      if !user
+        flash[:notice] = "User not found"
+      elsif user.password != params[:user][:password]
+        flash[:notice] = "Wrong password"
+      else
+        session[:user] = user
+        redirect_to user
+        return
+      end
+    end
+  end
+
   def create
     @user = User.new(params[:user]);
     if @user.save
@@ -28,7 +49,11 @@ class UsersController < ApplicationController
   end
 
   def new
-    @user = User.new
+    if self.is_logged
+      redirect_to session[:user], notice: "You are already logged in"
+    else
+      @user = User.new
+    end
   end
 
   def update

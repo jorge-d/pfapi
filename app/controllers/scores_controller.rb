@@ -9,6 +9,5 @@ class ScoresController < ApplicationController
 
   def index
     @scores = @user.scores.recents
-    # render json: @scores
   end
 end

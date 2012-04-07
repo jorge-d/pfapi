@@ -11,3 +11,23 @@
  *= require_self
  *= require_tree .
 */
+
+.warning
+{
+  color: red;
+  text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+  margin: 10px;
+}
+
+.sign-form
+{
+  margin-left: 30%;
+
+  label
+  {
+    font-size: 14px;
+    font-weight: bold;
+  }
+}

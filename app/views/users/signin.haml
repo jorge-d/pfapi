@@ -1,0 +1,11 @@
+.sign-form
+  = form_for :user, url: '/signin' do |f|
+    = f.label :name, 'Username'
+    = f.text_field :name
+    = f.label :password, 'Password'
+    = f.password_field :password
+    %br
+    = f.submit 'Sign in'
+  %h5
+    No account? you can sign up
+    =link_to 'here', new_user_path
