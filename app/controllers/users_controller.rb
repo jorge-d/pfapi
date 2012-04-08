@@ -75,14 +75,15 @@ class UsersController < ApplicationController
   def index
     @users = User.all
     @zones = Zone.all
-    @zones_with_scores = @zones.map do |m|
-      sc = m.scores.best.first
-      if sc
-        best = sc.value
+    @scores_map = @zones.map do |zone|
+      score = zone.scores.best.first
+      if score
+        user = score.user
+        game = score.game
+        [zone.id, zone.latitude, zone.longitude, score.value, [user.id, user.name], [game.id, game.name]]
       else
-        best = 0
+        [zone.id, zone.latitude, zone.longitude, 0]
       end
-      [m.latitude, m.longitude, best]
     end
   end
 end

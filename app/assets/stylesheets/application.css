@@ -12,6 +12,14 @@
  *= require_tree .
 */
 
+.informations
+{
+  min-width: 300px;
+  min-height: 100px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
 .warning
 {
   color: red;
