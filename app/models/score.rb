@@ -3,7 +3,7 @@ class Score < ActiveRecord::Base
   belongs_to :user
   belongs_to :game
 
-  validates :value, presence: true, inclusion: { :in => 1..999, message: "can only be between 1 and 999." }
+  validates :value, presence: true, inclusion: { :in => 1..9999, message: "can only be between 1 and 9999." }
   validates :user_id, presence: true
   validates :zone_id, presence: true
   validates :game_id, presence: true
