@@ -7,6 +7,6 @@ class Zone < ActiveRecord::Base
   validates :longitude, presence: true
 
   def best_scores_in_zone game, nb
-    self.scores.where(game_id: game).order(:value).limit(nb)
+    self.scores.where(game_id: game).order("value DESC").limit(nb)
   end
 end
