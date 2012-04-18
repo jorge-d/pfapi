@@ -54,7 +54,7 @@ function initialize() {
     });
 
     content = "<div class='informations'><h3 style='text-align: center;'><a href='" + window.location.origin + "/zones/" + points[i][0] +
-              "' /> Zone #" + points[i][0] + " (" + points[i][1] + ", " + points[i][1] + ")</a></h3>" +
+              "' /> Zone #" + points[i][0] + " (" + points[i][1] + ", " + points[i][2] + ")</a></h3>" +
               "<p><ul style='font-style: italic'>";
     if (points[i].length > 4)
     {
