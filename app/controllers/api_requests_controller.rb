@@ -23,9 +23,9 @@ class ApiRequestsController < ApplicationController
   # check if the user is correct
   def getAndCheckUser
     if !params[:user_key]
-      render json: "Missing user_key"
+      render json: {error: "Missing user_key"}
     elsif !(@user = User.where(encrypted_password: params[:user_key]).first)
-      render json: "User not found"
+      render json: {error: "User not found"}
     else
       return true
     end
@@ -35,13 +35,13 @@ class ApiRequestsController < ApplicationController
   # check if the coordinates are good and create zone if i doesn't exists, then get it
   def getAndCheckCoordinates
     if !params[:latitude] or !params[:longitude]
-      render json: "Missing coordinates (params latitude=X&longitude=X)"
+      render json: {error: "Missing coordinates (params latitude=X&longitude=X)"}
       return false
     end
     lat = params[:latitude].to_f
     long = params[:longitude].to_f
     if !(@zone = create_zone_if_doesnt_exists(lat, long))
-      render json: "Invalid coordinates: read http://www.sunearthtools.com/dp/tools/conversion.php?lang=fr"
+      render json: {error: "Invalid coordinates: read http://www.sunearthtools.com/dp/tools/conversion.php?lang=fr"}
       return false
     end
     @latitude = get_zone_coordinates(lat)
@@ -52,9 +52,9 @@ class ApiRequestsController < ApplicationController
   # check if the game api_key is ok (for scores and other small things)
   def getAndCheckGame
     if !params[:game_id]
-      render json: "Missing game_id (params game_id=X)"
+      render json: {error: "Missing game_id (params game_id=X)"}
     elsif !(@game = Game.where(api_key: params[:game_id]).first)
-      render json: "Game not found"
+      render json: {error: "Game not found"}
     else
       return true
     end
@@ -85,11 +85,11 @@ class ApiRequestsController < ApplicationController
   # get the best scores from zone
   def best_score_from_zone_by_id
     if !params[:zone_id]
-      render json: "Missing parameter zone_id"
+      render json: {error: "Missing parameter zone_id"}
     else
       zone = Zone.find_by_id(params[:zone_id])
       if !zone
-        render json: "Invalid zone"
+        render json: {error: "Invalid zone"}
       else
         params[:nb] ||= 10
         render json: zone.best_scores_in_zone(@game, params[:nb])
@@ -100,11 +100,11 @@ class ApiRequestsController < ApplicationController
   # get zone informations by its ID
   def zone_informations_by_id
     if !params[:zone_id]
-      render json: "Missing parameter zone_id"
+      render json: {error: "Missing parameter zone_id"}
     else
       z = Zone.find_by_id(params[:zone_id])
       if !z
-        render json: "Zone not found"
+        render json: {error: "Zone not found"}
       else
         render json: z # need a beter format
       end
@@ -124,10 +124,10 @@ class ApiRequestsController < ApplicationController
   # checkout the score on the zone and for the game passed on parameters
   def checkout_score
     if !(params[:value].to_i > 0)
-      render json: "Bad value"
+      render json: {error: "Bad value"}
     else
       if !@user.unlocked_zones.where(zone_id: @zone).first
-        render json: "You need to unlock the zone first"
+        render json: {error: "You need to unlock the zone first"}
       else
         @user.set_last_position(@zone)
         @score = Score.create(value: params[:value].to_i, user: @user, zone: @zone, game: @game)
@@ -139,19 +139,19 @@ class ApiRequestsController < ApplicationController
   # get the users's key
   def credentials
     if !params[:login]
-      ret = "login missing"
+      ret = {error: "login missing"}
     elsif !params[:password]
-      ret = "password missing"
+      ret = {error: "password missing"}
     else
       user = User.where(name: params[:login]).limit(1).first
       if !user
-        ret = "User not found"
+        ret = {error: "User not found"}
       else
         tmp = user.encrypt_string(params[:password])
         if tmp == user.encrypted_password
           ret = {key: user.encrypted_password}
         else
-          ret = "Invalid password"
+          ret = {error: "Invalid password"}
         end
       end
     end
@@ -160,7 +160,7 @@ class ApiRequestsController < ApplicationController
 
   def unlock_zones_arround
     if !@user.unlocked_zones.where(zone_id: @zone).first
-      render json: "This zone is still locked for you"
+      render json: {error: "This zone is still locked for you"}
       return
     end
     ret = @user.unlock_zones_arround(@zone)
