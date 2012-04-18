@@ -16,17 +16,9 @@
   %table{style: "border: 1px solid black; width: 60%; text-align: center"}
     %tr
       %th name
-      %th password
-      %th user_key
-      %th edit
-      %th delete
     - @users.each do |user|
       %tr
         %td= link_to user.name, user
-        %td= user.password
-        %td= user.encrypted_password
-        %td= link_to 'E', edit_user_path(user)
-        %td= link_to 'X', user, confirm: 'are you sure?', method: :delete
 
 %h3= link_to 'Zones', zones_path
 - if !@zones.count

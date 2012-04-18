@@ -1,7 +1,6 @@
 .user-informations
   .last-position
     %h1= @user.name
-    %p{style: "color:red"} Player's credential (user_key) is #{@user.encrypted_password}
     - if !@user.last_position
       %p Player haven't played yet
     - else
